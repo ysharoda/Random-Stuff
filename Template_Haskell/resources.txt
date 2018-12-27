@@ -1,0 +1,27 @@
+GHC user guide, Sec.7.9.
+https://downloads.haskell.org/~ghc/7.0.2/docs/html/users_guide/template-haskell.html  
+
+Template MetaProgramming in Haskell (Paper by Simon P. Jones)
+https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/meta-haskell.pdf?from=http%3A%2F%2Fresearch.microsoft.com%2Fen-us%2Fum%2Fpeople%2Fsimonpj%2Fpapers%2Fmeta-haskell%2Fmeta-haskell.pdf 
+
+24 days of GHC extensions: 
+https://ocharles.org.uk/guest-posts/2014-12-22-template-haskell.html 
+
+Template Haskell is not scary: 
+https://www.parsonsmatt.org/2015/11/15/template_haskell.html 
+
+=====================
+Notes: 
+
+"In addition to the states, we count levels, by starting in state 0, incrementing when processing under quasi-quotes, and decrementing
+when processing inside $ or splice. The levels are used to distinguish a top-level splice from a splice inside quasi-quotes. For
+example" from the paper by Simon P. Jones 
+
+- whatever value comes after the splice, haskell needs to be able to evaluate it at compile time ==> staging error
+ 
+- for every data constructor in template haskell, there is a function that lift it to the monad Q. Eg: 
+AppT :: Type -> Type -> Type -- type application 
+appT :: TypeQ -> TypeQ -> TypeQ 
+
+- The splice operator is only used before the code representation (values wrapped in the Q monad). We do not use it to evaluate functions that may result on any other type (that's why we were always getting a lift error). 
+
