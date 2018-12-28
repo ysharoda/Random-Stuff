@@ -1,0 +1,3 @@
+
+Why Applicative Functors Matter: 
+https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/24/slides/derek.pdf
