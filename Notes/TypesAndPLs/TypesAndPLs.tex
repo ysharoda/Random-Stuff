@@ -1,0 +1,169 @@
+\RequirePackage{amsmath}
+\documentclass[]{article}
+
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{mathptmx}
+\usepackage{stmaryrd,mathtools}
+\let\vec\relax
+\usepackage{MnSymbol}
+%\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{xspace}
+\usepackage[show]{ed}
+
+\newenvironment{thyex}
+{\left\{%
+	\begin{array}{rcl}%
+	} {%
+	\end{array}%
+	\right\}%
+}
+\newcommand{\thyrow}[2]{{#1} & : & {#2}\\}
+
+\newenvironment{floatrule}{\hrule\vskip\abovedisplayskip}
+{\vskip\belowdisplayskip\hrule\vskip\belowdisplayskip}
+
+\hyphenation{pro-per-ties}
+
+%%%%%%%%%% Start TeXmacs macros
+\newcommand{\tmop}[1]{\ensuremath{\operatorname{\mathtt{#1}}}\xspace}
+\newcommand{\tmtexttt}[1]{{\ttfamily{#1}}}
+\newcommand{\assign}{\coloneq}
+\newcommand{\tmdfn}[1]{\textbf{#1}}
+\newcommand{\cdummy}{\cdot}
+\newcommand{\upl}{+}
+
+
+%opening
+\title{Notes on Types and Programming Languages By Benjamin Pierce}
+\author{Yasmine Sharoda}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+My notes on things I read in the Types and PLs book by Benjamin Pierce. 
+\end{abstract}
+
+\section{Ch1 : Introduction}
+\begin{itemize}
+\item Type Systems can be viewed as lightweight formal method, with modest expressive power to describe desired behavior of software. Therefore, they are tools for reasoning about programs.  
+\item The definition from Page 1:
+\begin{quotation}
+	A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute
+\end{quotation}
+\item History\footnote{More detailed one on page 11, Figure 1-1}: 
+  \begin{itemize}
+  	\item Russell, 1902: The first formalization of type theory as an attempt to avoid the liar paradox 
+  	\item Whitehead and Russell, 1910: Ramified Theory of types 
+  	\item 1925: Ramsey's Simple Theory of Types 
+  	\item 1940: Church's Simply Typed Lambda Calculus 
+  	\item 1973 - 1984: Martin L\"of's Constructive Type Theory 
+  	\item Beradi 1988, Terlouw 1989, Barendregt 1992: Beradi, Terlouw and Barendregt's Pure Type System 
+  \end{itemize}
+During the 20th century, types became standard tools in logic, specifically proof theory 
+\item Two main applications in Computer Science 
+	\begin{itemize}
+		\item Applications to PLs $\rightarrow$ The focus of this book 
+		\item Connection to Logic (Curry Howard Correspondence)
+	\end{itemize}
+One main difference the descends from the different focus of the two groups is the interest in termination. The PL group would not stress on termination for the favor of using recursion, but the logic community would require every well-typed computation to terminate. 
+\item Types of terms are calculated \emph{compositionally}, i.e.: The type of a term depends only on the type of its subterms. 
+\item Static typing is \emph{conservative}: can proof the absence of bad behavior, but cannot prove their presence. \footnote{There is always tension between conservaitivity and expressiveness in the design of type systems.}
+\item Each type system comes with the definition of behaviors it aims to prevent. This behavior is referred to as \emph{run-time type errors}. The soundness of a type system should be judged with respect to its won set of run-time errors. 
+\item Type annotations: help the type checker work automatically during compilation. The view of proof assistants: a type annotation encodes a specification; then the type checker acts as a proof checker. Some languages, like ML, keeps type annotations to a minimum, while other, like Java, makes them more verbose. 
+\end{itemize}
+
+\newpage
+
+\part*{Untyped Systems}
+
+\section{Ch3: Untyped Arithemtic Expressions}
+Developing a small language for numbers and booleans. The language includes
+\begin{itemize}
+	\item Boolean Constants: \verb|true| and \verb|false|.
+	\item Conditional Expressions 
+	\item Numeric Constant \verb|0|.
+	\item Arithmetic Operators \verb|succ| and \verb|pred|.
+	\item Testing Operation \verb|iszero|.  
+\end{itemize}
+\subsection*{Abstract Syntax}
+The Abstract syntax of the langauge can be defined in multiple ways 
+\subsubsection*{1. Grammar} 
+\begin{verbatim}
+t :: = true  
+        false 
+        if t then t else t 
+        0 
+        succ t 
+        pred t 
+        iszero t 
+\end{verbatim}
+The symbol \verb|t| on the right-hand side is a \emph{meta-variable}. It is part of the \emph{meta-language} that describe terms of the \emph{object language}. Note that the object language here does not have variables. Along the same lines come \emph{meta-theory}, which is the set of correct statements that describes the object language, begin it a logic or a PL. For example, the meta-theory of subtyping is the formal study of the properties of subtyping. 
+
+A \emph{program} in the present language is a term built from the forms given by the grammar above. Note that this grammar allows for the creation of terms like \verb|succ true|, which are not well-typed.
+
+\subsubsection*{2. Inductive Definitions}
+The set of terms is the smallest set $\mathcal{T}$, such that: 
+\begin{lstlisting}[mathescape=true]
+{true,false,0} $\subseteq$ $\mathcal{T}$
+$\text{if}$ t$_1$ $\in$ $\mathcal{T}$, $\text{then}$ {succ t$_1$, pred t$_1$, iszero t$_1$} $\subseteq$ $\mathcal{T}$; 
+$\text{if}$ t$_1$ $\in$ $\mathcal{T}$, t$_2$ $\in$ $\mathcal{T}$, $\text{and}$ t$_3$ $\in$ $\mathcal{T}$, $\text{then}$ if t$_1$ then t$_2$ else t$_3$ $\in$ $\mathcal{T}$.
+\end{lstlisting}
+Inductive definitions are used to define inductive functions and perform proofs by induction. 	`
+
+\subsubsection*{3. Inference Rules}
+Defining the set of terms using natural deduction style presentations, the two-dimensional inference rules. In this case we call them \emph{rule schemas}, since their premises and conclusions may include meta-variables. So, the schema represents the infinite set of \emph{concrete} rules that can be achieved by instantiating the meta-variables with entities from the appropriate syntactic category. See the rules in Page 23. 
+
+Note that the Inductive definition and Inference rules define the set of terms by specifying some of its closure properties. 
+
+\subsubsection*{4. Concrete Terms}\ednote{I don't really see why this is useful or why anyone would do it this way.}
+Construct the set of terms as the limit of a sequence. For each natural number, define a set $S_i$ as follows 
+\begin{lstlisting}[mathescape=true]
+S$_0$ = $\Phi$
+S$_{i+1}$ = {true,false,0} $\cup$
+      {succ t$_1$, pred t$_1$, iszero t$_1$ | t$_1$ $\in$ S$_i$} $\cup$
+      {if t$_1$ then t$_2$ else t$_3$ | t$_1$,t$_1$,t$_1$ $\in$ S$_i$}
+S = $\bigcup_i$ S$_i$
+\end{lstlisting} 
+
+\subsection*{Semantics}
+Three basic approaches to defining semantics 
+\subsubsection*{1. Operational Semantics}
+\begin{itemize}
+	\item Specify behavior by defining an abstract machine for it. 
+	\item It uses terms of the language as the machine code.  
+	\item Machine behavior is defined as transition function between states. 
+	\item The meaning of a term is the final state the machine reaches. 
+\end{itemize}
+
+\subsubsection*{2. Denotational Semantics}
+\begin{itemize}
+	\item The meaning of a term is some mathematical object, a number or a function. 
+	\item It uses: a semantic domain + an interpretation function mapping terms to elements of the domain 
+\end{itemize}
+
+\subsubsection*{3.	Axiomatic Semantics}
+\begin{itemize}
+	\item Specify behavior by using axioms, and then derive laws from these axioms. 
+	\item The meaning of a term becomes whatever you can prove about it. 
+\end{itemize}
+
+\subsection*{Evaluation}
+A \emph{value} is the result of evaluating a term. In this language, a value is either a boolean or a number. In the case of the term language above, the boolean values are a subset of the the terms, namely \verb|true| and \verb|false|. 
+
+Evaluation is defined using \emph{evaluation relation} on terms. For example $ t \rightarrow t^\prime$ means that $t$ evaluates to $ t^\prime$ in one step. This is called small-step semantics. Big step semantics is written as $t \Downarrow t^\prime$ and it described multi-step evaluation. The rules look like inference rules with things above and below the lines. See the evaluation relations for Booleans on page 34. The rules that do real evaluations are called \emph{evaluation rules}, while the ones that only simplifies terms are called \emph{congruence rules}. 
+
+A term $t$ is in normal form if no evaluation rule applies to it. A closed term is stuck if it is in normal form, but not a value. This gives the notion of a run-time error. 
+
+
+\end{document}
+
