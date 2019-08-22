@@ -1,5 +1,5 @@
 \RequirePackage{amsmath}
-\documentclass[]{article}
+\documentclass[fleqn]{article}
 
 \usepackage{amssymb}
 \usepackage{tikz}
@@ -162,7 +162,65 @@ A \emph{value} is the result of evaluating a term. In this language, a value is 
 
 Evaluation is defined using \emph{evaluation relation} on terms. For example $ t \rightarrow t^\prime$ means that $t$ evaluates to $ t^\prime$ in one step. This is called small-step semantics. Big step semantics is written as $t \Downarrow t^\prime$ and it described multi-step evaluation. The rules look like inference rules with things above and below the lines. See the evaluation relations for Booleans on page 34. The rules that do real evaluations are called \emph{evaluation rules}, while the ones that only simplifies terms are called \emph{congruence rules}. 
 
-A term $t$ is in normal form if no evaluation rule applies to it. A closed term is stuck if it is in normal form, but not a value. This gives the notion of a run-time error. 
+A term $t$ is in normal form if no evaluation rule applies to it. A closed term is stuck if it is in normal 
+form, but not a value. This gives the notion of a run-time error. 
+
+\section{Untyped (Pure) Lambda Calculus}
+\begin{itemize}
+	\item History: 
+	\begin{itemize}
+		\item Lambda Calculus is developed in 1920s by Alonzo Church. It reduces all computation to 
+		basic operations of function definition and application. 
+		\item Used by Peter Landin in the mid 1960s to formulate essential mechanisms of PLs, followed 
+		by the work of John McCarthy on Lisp. 
+	\end{itemize}
+	\item Lambda Calculus is used in 
+	\begin{itemize}
+		\item Specification of PL features 
+		\item Language Design 
+		\item Study of type systems 
+	\end{itemize}
+	\item Other calculi used for similar purposes are: Pi-Calculus (semantics of concurrent languages) 
+	and Object-Calculus (semantics of object-oriented languages). 
+	\item Philosophy: 
+	\begin{itemize}
+		\item Everything is a function: The arguments to and results from functions are also functions. 
+		\item a \emph{lambda term} is any arbitrary term in the lambda calculus. If it starts with $\lambda$, 
+		we call it \emph{lambda abstraction}. 
+	\end{itemize}
+	\item Syntax: terms has three sorts 
+	\begin{itemize}
+		\item A variable $x$ 
+		\item An abstraction $\lambda x \cdot t$ 
+		\item Application $t_1 t_2$. 
+	\end{itemize}
+	Note the difference between \emph{concrete (surface) syntax} that programmers read and write and 
+	\emph{abstract syntax} that uses ASTs and is used for manipulations. Speaking of syntax in the 
+	context of this book refers to the abstract syntax. 
+	\item Operational Semantics: 
+	\begin{itemize}
+		\item In the purest form: no constant or primitive operators. 
+		\item \emph{Beta-reduction} is the only way of computation. This means applying functions to 
+		arguments, which are themselves functions. Equation 
+		\ref{eq:appl} shows how the application of the function to $t_{12}$ is rewritten as the substitution 
+		of $t_2$ for $x$. The left-hand-side of this equation is called the \emph{redex} and the rewriting 
+		operation is called beta-reduction. 
+		\begin{equation}\label{eq:appl}
+		(\lambda x \cdot t_{12}) t_2 \to [x \mapsto t_2] t_{12}
+		\end{equation}
+		\item Different reduction strategies, based on the order of choosing redex: 
+		\begin{itemize}
+			\item \emph{normal order} strategy: Start at the outermost (leftmost) redex. In this case 
+			evaluation relation is a partial function.
+			\item \emph{Call-By-Name} strategy: No reductions inside abstractions. 
+			\item \emph{Call-By-Need} strategy: overwrite all occurrences of an argument with its value the 
+			first time it is evaluated. The reduction relation is then an abstract syntax graph, not a tree 
+			\ednote{I don't understand why it is a graph, not a tree (P.57, second point)}
+		\end{itemize}
+		\item Reduction can happen in different orders. 
+		
+	\end{itemize}
+\end{itemize}
 
 
 \end{document}
